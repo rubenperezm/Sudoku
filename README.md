@@ -3,10 +3,10 @@ MATLAB GUI for solving sudokus using voice and video
 
 
 ## Contributors
-Rubén Pérez Mercado
-Pablo Sanchidrián Herrera
-Álvaro Pérez Lara
-Ismael Vargas García
+- Rubén Pérez Mercado
+- Pablo Sanchidrián Herrera
+- Álvaro Pérez Lara
+- Ismael Vargas García
 
 
 ## TO-DO list
