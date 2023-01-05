@@ -1,11 +1,9 @@
-function [row, col, num] = voiceInput()
-    close all;
-    addpath('./audioFiles/');
-
-    load 'test.mat';
+function [row, col, num] = voiceInput(signal)
     
-    figure, plot(signal);
-    title('original');
+    addpath('./audioFiles/');
+    
+%     figure, plot(signal);
+%     title('original');
 %     envelope = imdilate(abs(signal), true(1500, 1));
 %     quite = envelope < 0.05;
 %     signal(quite) = [];
@@ -22,11 +20,11 @@ function [row, col, num] = voiceInput()
     y(pos) = 0;
 
  
-    figure, plot(y);
-    title('silent to 0');
+%     figure, plot(y);
+%     title('silent to 0');
 
     arr = diff(y);
-    figure, plot(1:length(arr), abs(arr));
+%     figure, plot(1:length(arr), abs(arr));
 
     
     f = 0;
@@ -35,7 +33,7 @@ function [row, col, num] = voiceInput()
     mods = abs(arr);
     inSignal = 0;
     for i=200:length(mods)
-        if mods(i) > 0 && mean(mods(i:i+200) > 0.06) && inSignal == 0 % inicio de señal
+        if mods(i) > 0 && mean(mods(i-200:i) > 0.06) && inSignal == 0 % inicio de señal
             inSignal = 1;
             ini = [ini i];
         end
@@ -59,11 +57,11 @@ function [row, col, num] = voiceInput()
     s2 = signal(p1:p2);
     s3 = signal(p2:end);
 
-    sound(s1, 8000, 16);
-    pause(1);
-    sound(s2, 8000, 16);
-    pause(1);
-    sound(s3, 8000, 16);
+%     sound(s1, 8000, 16);
+%     pause(1);
+%     sound(s2, 8000, 16);
+%     pause(1);
+%     sound(s3, 8000, 16);
 
     row = classifyAudio(s1);
     col = classifyAudio(s2);
