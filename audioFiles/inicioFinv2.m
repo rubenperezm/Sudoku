@@ -1,5 +1,4 @@
 function [tramasPalabra, inicioPalabra, finPalabra] = inicioFinv2(tramas, numTramasRuido, ventana)
-        
     % paso 1
     z = tasaCrucesxCero(tramas, ventana);
     m = magnitud(tramas, ventana);
