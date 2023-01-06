@@ -1,64 +1,79 @@
 function sudoku = getSudoku(img)
     
 
+    %Corregimos la perspectiva
     img = CorrectPerspective(img);
 
     %Obtemos las casillas
     s = getSquares(img);
 
    
-
+    %Si no hemos encontrado 81 casillas exactemente vamos a tener problemas
+    %al clasificar los números así que en el caso de que no la pillemos
+    %bien devolvemos 0 para volver a intentarlo.
     if length(s) == 81
+        %Obtenemos los recuadros ordenados por sus coordenadas
         roi = sortByCoordinates(s);
         umbral = graythresh(img);
         Igray = rgb2gray(img);
         
         binary = imbinarize(Igray,'adaptive','ForegroundPolarity','dark');
     
-        %binary = imbinarize(Igray,umbral);%a binaria
         
-        %Eliminamos todo lo que no es un número, es decir, las casillas
+        % A partir de ahora eliminamos todo lo que no es un número, 
+        % es decir, las casillas
+
         
         BWComplement = ~binary;
     
         ele =  strel('square',4);
+
         %BWComplement = imdilate(BWComplement,ele);
         BWComplement = imclose(BWComplement,ele);
-        %Buscamos todas las componentes conexas de la imagen
+        %Buscamos todas las componentes conexas de la imagen (Conjuntos de
+        %píxeles conectados de color blanco)
         CC = bwconncomp(BWComplement);
         
         %Las componentes conexas más grandes, con más pixeles, será el recuadro y
-        %los bordes en el caso de que la imagen esté rotada mal(se quedan bordes
+        %los bordes en el caso de que la imagen esté rotada (se quedan bordes
         %negros)
         numberPixels = cellfun(@numel, CC.PixelIdxList);
         idx = find(numberPixels > 5000);
         for i=1: length(idx)
             BWComplement(CC.PixelIdxList{idx(i)}) = 0;
         end
+        %Por la iluminación a veces detecta pequeñas zonas pintadas
+        % dónde no hay nada así que también los eliminamos para no tener
+        % problema al clasificar números
         idx = find(numberPixels < 400);
         for i=1: length(idx)
             BWComplement(CC.PixelIdxList{idx(i)}) = 0;
         end
         
-        BWComplement = imclose(BWComplement, ele);
-        %BWComplement = imclose(BWComplement,ele);
+        
+
         %Le indicamos donde tiene que buscar los numeros, es decir, 
         %en las casillas que ya hemos calculado
     %     roi = vertcat(s(:).BoundingBox);
         
-        %Obtenemos los números de la siguiente imagen (Sin esqueleto)
-    %     BWComplement = imerode(BWComplement, strel('square',3));
-    %     BWComplement = imerode(BWComplement, strel('square',3));
+        %Moldeamos los números de la siguiente imagen para que no haya
+        % Problema por si un número es demasiado gordo(Sin esqueleto)
+        BWComplement = imclose(BWComplement, ele);
+        ele =  strel('square',3);
+        BWComplement = imerode(BWComplement, ele);
+        BWComplement = imerode(BWComplement, ele);
     
-        %Esqueleto
-        ele =  strel('square',4);
-        BWComplement=bwmorph(BWComplement,'thin',Inf);
-        BWComplement = imclose(BWComplement,ele);
-        BWComplement = imdilate(BWComplement,ele);
+        %Esqueleto y dilatar, así pillaba mejor los 8 pero empezaba a
+        %fallar con los 6
+%         ele =  strel('square',4);
+%         BWComplement=bwmorph(BWComplement,'thin',Inf);
+%         BWComplement = imclose(BWComplement,ele);
+%         BWComplement = imdilate(BWComplement,ele);
     
     
     
-        figure, imshow(BWComplement);
+        %Obtenemos los numeros de la siguiente imagen
+        %figure, imshow(BWComplement);
         results = ocr(BWComplement, roi, 'TextLayout', 'Character','CharacterSet','0':'9');
         
         % Eliminamos los espacios en blanco de los resultados
@@ -67,19 +82,19 @@ function sudoku = getSudoku(img)
             ce{i} = deblank(results(i).Text);
         end
         
-        final = insertObjectAnnotation(im2uint8(binary), 'Rectangle', roi, ce);
-        figure
-        imshow(final)
+        %Imprimir los numeros detectados en la imagen
+%         final = insertObjectAnnotation(im2uint8(binary), 'Rectangle', roi, ce);
+%         figure
+%         imshow(final)
 
+        %como tenemos problemas al pillar los 8 entonces cuando estemos en
+        %una casilla sin detectar número pero no esté vacía vamos a decir
+        %que es un 8
         sudoku = zeros(9,9);
         for i = 1: length(ce)
-            %pos = ind2sub([9 9],i)
             if strcmp(ce{i}, '')
                 r = uint16(roi(i, :));
                 img = binary(r(2): r(2)+r(4), r(1):r(1)+r(3));
-                if i == 76
-                    figure, imshow(img);
-                end
                 if(length(find(img == 0)) > 0.1 * numel(img))
                     sudoku((ind2sub([9 9],i))) = 8;
                 end

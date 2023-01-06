@@ -16,7 +16,7 @@ function fixedImage = CorrectPerspective(img)
 
     diff_im = (imdilate(imdilate(edge(diff_im,'canny'), ele), ele)); 
 
-    imshow(diff_im); hold on;
+    
 
     % Board line detection via Hough Transform:
     [ H, theta, rho ] = hough(diff_im);
@@ -39,19 +39,22 @@ function fixedImage = CorrectPerspective(img)
     points = zeros(2*totalLines, 2);
 
 
-    % Plot the detected lines:
+    % imprimimos las líneas detectadas
+%     imshow(diff_im); hold on;
     for lineIndex = 1:totalLines
         xy = [ lines(lineIndex).point1; lines(lineIndex).point2 ];
         rowEnd = 2*lineIndex;
         rowStart = rowEnd - 1;
         points(rowStart:rowEnd,1:2) = xy;
        
-            plot( xy(:,1), xy(:,2), 'LineWidth', 2, 'Color', 'green' );
-            plot( xy(1,1), xy(1,2), 'x', 'LineWidth', 2, 'Color', 'yellow' );
-            plot( xy(2,1), xy(2,2), 'x', 'LineWidth', 2, 'Color', 'red' );
+%             plot( xy(:,1), xy(:,2), 'LineWidth', 2, 'Color', 'green' );
+%             plot( xy(1,1), xy(1,2), 'x', 'LineWidth', 2, 'Color', 'yellow' );
+%             plot( xy(2,1), xy(2,2), 'x', 'LineWidth', 2, 'Color', 'red' );
     
     end
 
+    %Cogemos el punto medio entre las lineas que se cruzan en una esquina
+    %mediante kmeans de matlab
     totalClusters = 4;
     [~, corners] = kmeans(points,totalClusters,'Distance','sqeuclidean', 'Display','final', 'Replicates',5);
     
@@ -71,20 +74,22 @@ function fixedImage = CorrectPerspective(img)
     c3 = cAux(3,:);
     c4 = cAux(4,:);
 
-    % Plot big red marks on centroid location:
-    figure,
-    plot(corners(:,1),corners(:,2),'rx', 'MarkerSize',15,'LineWidth',3)
-%     plot(corners(1:2,:),corners(:,2),'rx', 'MarkerSize',15,'LineWidth',3)
+    % IMprimimos los centros obtenidos con kmeans
+%     figure,
+%     plot(corners(:,1),corners(:,2),'rx', 'MarkerSize',15,'LineWidth',3)
+% %     plot(corners(1:2,:),corners(:,2),'rx', 'MarkerSize',15,'LineWidth',3)
+% 
+%     hold off;
 
-    hold off;
     size = 1000;
-    % Define the desired corner positions
+    % Definimos las posiciones deseadas de las esquinas
     desiredCorners = [0, 0; 0, size; size, size; size, 0];
     
+    %Rotamos la imagen para tener el sudoku recto
     tform = fitgeotrans([c1;c2;c4;c3],desiredCorners,'projective');
     
     % Transform the image
     fixedImage = imwarp(img, tform);
-    figure, imshow(fixedImage);
+    %figure, imshow(fixedImage);
     %fixedImage = ~fixedImage;
 end
