@@ -34,8 +34,11 @@ function fixedImage = CorrectPerspective(img)
     % Get detected lines:
     totalLines = length(lines);
 
+    if totalLines ~= 4
+        fixedImage = zeros(height(img), width(img),3);
+        return
+    end
     % Get detected lines:
-    totalLines = length(lines);
     points = zeros(2*totalLines, 2);
 
 
