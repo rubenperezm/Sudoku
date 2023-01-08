@@ -1,4 +1,5 @@
 function [tramasPalabra, inicioPalabra, finPalabra] = inicioFinv2(tramas, numTramasRuido, ventana)
+        
     % paso 1
     z = tasaCrucesxCero(tramas, ventana);
     m = magnitud(tramas, ventana);
@@ -16,9 +17,9 @@ function [tramasPalabra, inicioPalabra, finPalabra] = inicioFinv2(tramas, numTra
     desvM2 = std(m(end-numTramasRuido+1:end));
     
     % paso 3
-    UmbSupEnrg = 0.3 * max(m);
-    UmbInfEnrg = max(mediaM + 2*desvM, mediaM2 + 2*desvM2);
-    UmbCruCero = max(mediaZ + 2*desvZ, mediaZ2 + 2*desvZ2);
+    UmbSupEnrg = 0.1 * max(m);
+    UmbInfEnrg = max(mediaM + 2*desvM, mediaM2 + 2*desvM2); % me quedo con el maximo
+    UmbCruCero = max(mediaZ + 2*desvZ, mediaZ2 + 2*desvZ2); % me quedo con el maximo
     
     inicioPalabra = steps(M, Z, UmbSupEnrg, UmbInfEnrg, UmbCruCero, numTramasRuido);
     finPalabra = steps(flip(M), flip(Z), UmbSupEnrg, UmbInfEnrg, UmbCruCero, numTramasRuido);

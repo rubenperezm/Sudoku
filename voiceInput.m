@@ -10,8 +10,6 @@ function [row, col, num] = voiceInput(signal)
 %     figure, plot(signal);
 %     title('quite removed');
 
-
-
 %     res = conv(signal, zeros(1,500));
 %     figure, plot(res); 
     y = signal;
@@ -24,7 +22,7 @@ function [row, col, num] = voiceInput(signal)
 %     title('silent to 0');
 
     arr = diff(y);
-%     figure, plot(1:length(arr), abs(arr));
+    figure, plot(1:length(arr), abs(arr));
 
     
     f = 0;
@@ -33,12 +31,12 @@ function [row, col, num] = voiceInput(signal)
     mods = abs(arr);
     inSignal = 0;
     for i=200:length(mods)
-        if mods(i) > 0 && mean(mods(i-200:i) > 0.06) && inSignal == 0 % inicio de señal
+        if mods(i) > 0 && mean(mods(i-200:i) > 0.06) && inSignal == 0 % start of signal
             inSignal = 1;
             ini = [ini i];
         end
 
-        if mods(i) == 0 && inSignal == 1 && f <= 2 && all(mods(i-200:i) == 0) % fin de señal
+        if mods(i) == 0 && inSignal == 1 && f <= 2 && all(mods(i-200:i) == 0) % end of signal
             f = f + 1;
             inSignal = 0;
             fin = [fin i];
