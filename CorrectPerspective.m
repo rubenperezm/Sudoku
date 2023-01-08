@@ -59,7 +59,7 @@ function fixedImage = CorrectPerspective(img)
     %Cogemos el punto medio entre las lineas que se cruzan en una esquina
     %mediante kmeans de matlab
     totalClusters = 4;
-    [~, corners] = kmeans(points,totalClusters,'Distance','sqeuclidean', 'Display','final', 'Replicates',5);
+    [~, corners] = kmeans(points,totalClusters,'Distance','sqeuclidean', 'Replicates',5);
     
     % respecto a x
     [corners(:,1), idx] = sort(corners(:,1));

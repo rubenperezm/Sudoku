@@ -13,7 +13,7 @@ function [row, col, num] = imageInput(img)
     %bien devolvemos 0 para volver a intentarlo.
     if length(s) == 3
         %Obtenemos los recuadros ordenados por sus coordenadas
-        roi = sortByCoordinates(s);
+        roi = sortByCoord(s);
         umbral = graythresh(img);
         Igray = rgb2gray(img);
         
@@ -49,9 +49,7 @@ function [row, col, num] = imageInput(img)
         for i=1: length(idx)
             BWComplement(CC.PixelIdxList{idx(i)}) = 0;
         end
-        
-        
-
+       
         %Le indicamos donde tiene que buscar los numeros, es decir, 
         %en las casillas que ya hemos calculado
     %     roi = vertcat(s(:).BoundingBox);
@@ -77,10 +75,10 @@ function [row, col, num] = imageInput(img)
         results = ocr(BWComplement, roi, 'TextLayout', 'Character','CharacterSet','0':'9');
         
 %         % Eliminamos los espacios en blanco de los resultados
-         ce = cell(1,numel(results));
-%         for i = 1:numel(results)
-%             ce{i} = deblank(results(i).Text);
-%         end
+        ce = cell(1,numel(results));
+        for i = 1:numel(results)
+            ce{i} = deblank(results(i).Text);
+        end
         
         %Imprimir los numeros detectados en la imagen
 %         final = insertObjectAnnotation(im2uint8(binary), 'Rectangle', roi, ce);
@@ -89,10 +87,10 @@ function [row, col, num] = imageInput(img)
 
         rowcolnum = [0 0 0];
         for i = 1: length(ce)
-            if strcmp(ce{i}, ' ')
+            if strcmp(ce{i}, '')
                 r = uint16(roi(i, :));
                 img = binary(r(2): r(2)+r(4), r(1):r(1)+r(3));
-                if(length(find(img == 0)) > 0.1 * numel(img))
+                if(length(find(img == 0)) > 0.2 * numel(img))
                     rowcolnum(i) = 8;
                 else
                     row = 0; col = 0; num = 0;
@@ -106,4 +104,13 @@ function [row, col, num] = imageInput(img)
     else
         row = 0; col = 0; num = 0;
     end
+end
+
+function final = sortByCoord(s)
+    mat = vertcat(s(:).BoundingBox);
+
+    mat2 = mat(:,1);
+
+    [~,ind] = sort(mat2);
+    final = mat(ind,:);
 end

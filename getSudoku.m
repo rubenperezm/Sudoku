@@ -77,10 +77,10 @@ function sudoku = getSudoku(img)
         results = ocr(BWComplement, roi, 'TextLayout', 'Character','CharacterSet','0':'9');
         
 %         % Eliminamos los espacios en blanco de los resultados
-         ce = cell(1,numel(results));
-%         for i = 1:numel(results)
-%             ce{i} = deblank(results(i).Text);
-%         end
+        ce = cell(1,numel(results));
+        for i = 1:numel(results)
+            ce{i} = deblank(results(i).Text);
+        end
         
         %Imprimir los numeros detectados en la imagen
 %         final = insertObjectAnnotation(im2uint8(binary), 'Rectangle', roi, ce);
@@ -92,10 +92,10 @@ function sudoku = getSudoku(img)
         %que es un 8
         sudoku = zeros(9,9);
         for i = 1: length(ce)
-            if strcmp(ce{i}, ' ')
+            if strcmp(ce{i}, '')
                 r = uint16(roi(i, :));
                 img = binary(r(2): r(2)+r(4), r(1):r(1)+r(3));
-                if(length(find(img == 0)) > 0.1 * numel(img))
+                if(length(find(img == 0)) > 0.2 * numel(img))
                     sudoku((ind2sub([9 9],i))) = 8;
                 end
             else 
