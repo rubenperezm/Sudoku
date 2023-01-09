@@ -22,7 +22,7 @@ function [row, col, num] = voiceInput(signal)
 %     title('silent to 0');
 
     arr = diff(y);
-    figure, plot(1:length(arr), abs(arr));
+%     figure, plot(1:length(arr), abs(arr));
 
     
     f = 0;
