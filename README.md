@@ -12,7 +12,7 @@ MATLAB GUI for solving sudokus using voice and video
 ## TO-DO list
 
 - [x] Matlab GUI
-- [ ] Audio Recordings
-- [ ] `function [row, col, num] = voice_input(signal)`
+- [x] Audio Recordings
+- [x] `function [row, col, num] = voice_input(signal)`
 - [ ] `function [row, col, num] = image_input(img)`
-- [ ] `function sudoku = getSudoku(img)`
+- [x] `function sudoku = getSudoku(img)`
