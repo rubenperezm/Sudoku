@@ -32,23 +32,23 @@ function sudoku = getSudoku(img)
         BWComplement = imclose(BWComplement,ele);
         %Buscamos todas las componentes conexas de la imagen (Conjuntos de
         %píxeles conectados de color blanco)
-        CC = bwconncomp(BWComplement);
+%         CC = bwconncomp(BWComplement);
         
         %Las componentes conexas más grandes, con más pixeles, será el recuadro y
         %los bordes en el caso de que la imagen esté rotada (se quedan bordes
         %negros)
-        numberPixels = cellfun(@numel, CC.PixelIdxList);
-        idx = find(numberPixels > 5000);
-        for i=1: length(idx)
-            BWComplement(CC.PixelIdxList{idx(i)}) = 0;
-        end
-        %Por la iluminación a veces detecta pequeñas zonas pintadas
-        % dónde no hay nada así que también los eliminamos para no tener
-        % problema al clasificar números
-        idx = find(numberPixels < 400);
-        for i=1: length(idx)
-            BWComplement(CC.PixelIdxList{idx(i)}) = 0;
-        end
+%         numberPixels = cellfun(@numel, CC.PixelIdxList);
+%         idx = find(numberPixels > 5000);
+%         for i=1: length(idx)
+%             BWComplement(CC.PixelIdxList{idx(i)}) = 0;
+%         end
+%         %Por la iluminación a veces detecta pequeñas zonas pintadas
+%         % dónde no hay nada así que también los eliminamos para no tener
+%         % problema al clasificar números
+%         idx = find(numberPixels < 400);
+%         for i=1: length(idx)
+%             BWComplement(CC.PixelIdxList{idx(i)}) = 0;
+%         end
         
         
 
