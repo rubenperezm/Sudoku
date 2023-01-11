@@ -2,29 +2,16 @@ function [row, col, num] = voiceInput(signal)
     
     addpath('./audioFiles/');
     
-%     figure, plot(signal);
-%     title('original');
-%     envelope = imdilate(abs(signal), true(1500, 1));
-%     quite = envelope < 0.05;
-%     signal(quite) = [];
-%     figure, plot(signal);
-%     title('quite removed');
-
-%     res = conv(signal, zeros(1,500));
-%     figure, plot(res); 
+    % toma se señal y poner a 0 todas aquellas partes por debajo del umbral
     y = signal;
     umbral = 0.05 * max(abs(signal));
     pos = find(abs(signal) < umbral);
     y(pos) = 0;
 
- 
-%     figure, plot(y);
-%     title('silent to 0');
-
+    % diferencia de y
     arr = diff(y);
-%     figure, plot(1:length(arr), abs(arr));
-
     
+    % toma de puntos intermedios, para poder separar las señales
     f = 0;
     ini = [];
     fin = [];
@@ -42,12 +29,15 @@ function [row, col, num] = voiceInput(signal)
             fin = [fin i];
         end
     end
-
+    
+    % si la toma no es correcta notificamos del error seteando todos los
+    % parametros de salida a 0
     if length(ini) ~= 3 && length(fin) ~= 3
         row = 0; col = 0; num = 0;
         return;
     end
     
+    % aislamos la señales a traves de los punto de corte
     p1 = floor( (fin(1) + ini(2)) /2);
     p2 = floor( (fin(2) + ini(3)) /2);
 
@@ -55,12 +45,7 @@ function [row, col, num] = voiceInput(signal)
     s2 = signal(p1:p2);
     s3 = signal(p2:end);
 
-%     sound(s1, 8000, 16);
-%     pause(1);
-%     sound(s2, 8000, 16);
-%     pause(1);
-%     sound(s3, 8000, 16);
-
+    % clasificamos las señales
     row = classifyAudio(s1);
     col = classifyAudio(s2);
     num = classifyAudio(s3);
