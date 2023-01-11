@@ -34,6 +34,14 @@ function s = getSquares(data)
     %Obtenemos las casillas
     s = regionprops(diff_im, 'BoundingBox');
 
+
+    % Eliminamos los cuadrados pequeños (caso de comando por video)
+    if length(s) >= 5 && length(s) <= 7
+        mat = vertcat(s(:).BoundingBox);
+        mat2 = mat(:,4);
+        [~,ind] = sort(mat2, 'descend');
+        s = s(ind(1:4));
+    end
     %Eliminamos el primer rectangulo que siempre es el borde de toda la imagen
     s = s(2:end);
     

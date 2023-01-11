@@ -2,13 +2,12 @@ function [row, col, num] = imageInput(img)
     
 
     %Corregimos la perspectiva
-    img = CorrectPerspective(img);
+    img = CorrectPerspective2(img);
 
     %Obtemos las casillas
     s = getSquares(img);
 
-   
-    %Si no hemos encontrado 81 casillas exactemente vamos a tener problemas
+    %Si no hemos encontrado 3 casillas exactemente vamos a tener problemas
     %al clasificar los números así que en el caso de que no la pillemos
     %bien devolvemos 0 para volver a intentarlo.
     if length(s) == 3
@@ -30,25 +29,6 @@ function [row, col, num] = imageInput(img)
 
         %BWComplement = imdilate(BWComplement,ele);
         BWComplement = imclose(BWComplement,ele);
-        %Buscamos todas las componentes conexas de la imagen (Conjuntos de
-        %píxeles conectados de color blanco)
-        CC = bwconncomp(BWComplement);
-        
-        %Las componentes conexas más grandes, con más pixeles, será el recuadro y
-        %los bordes en el caso de que la imagen esté rotada (se quedan bordes
-        %negros)
-        numberPixels = cellfun(@numel, CC.PixelIdxList);
-        idx = find(numberPixels > 5000);
-        for i=1: length(idx)
-            BWComplement(CC.PixelIdxList{idx(i)}) = 0;
-        end
-        %Por la iluminación a veces detecta pequeñas zonas pintadas
-        % dónde no hay nada así que también los eliminamos para no tener
-        % problema al clasificar números
-        idx = find(numberPixels < 400);
-        for i=1: length(idx)
-            BWComplement(CC.PixelIdxList{idx(i)}) = 0;
-        end
        
         %Le indicamos donde tiene que buscar los numeros, es decir, 
         %en las casillas que ya hemos calculado
@@ -71,7 +51,7 @@ function [row, col, num] = imageInput(img)
     
     
         %Obtenemos los numeros de la siguiente imagen
-        %figure, imshow(BWComplement);
+        % figure, imshow(BWComplement);
         results = ocr(BWComplement, roi, 'TextLayout', 'Character','CharacterSet','0':'9');
         
 %         % Eliminamos los espacios en blanco de los resultados
@@ -89,12 +69,11 @@ function [row, col, num] = imageInput(img)
         for i = 1: length(ce)
             if strcmp(ce{i}, '')
                 r = uint16(roi(i, :));
-                img = binary(r(2): r(2)+r(4), r(1):r(1)+r(3));
-                if(length(find(img == 0)) > 0.2 * numel(img))
+                img = binary(r(2)+5: r(2)+r(4)+5, r(1)+5:r(1)+r(3)+5);
+                if (length(find(img == 0)) > 0.2 * numel(img))
                     rowcolnum(i) = 8;
                 else
-                    row = 0; col = 0; num = 0;
-                    return
+                    rowcolnum(i) = 0;
                 end
             else 
                 rowcolnum(i) = str2num(ce{i});

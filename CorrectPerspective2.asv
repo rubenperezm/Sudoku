@@ -73,7 +73,7 @@ function fixedImage = CorrectPerspective2(img)
     desiredCorners = [0, 0; 0, size; size, size; size, 0];
     
     %Rotamos la imagen para tener el sudoku recto
-    tform = fitgeotrans([c3;c1;c2;c4],desiredCorners,'projective');
+    tform = fitgeotrans([c2;c3;c1;c2],desiredCorners,'projective');
     
     % Transform the image
     fixedImage = imwarp(img, tform);
